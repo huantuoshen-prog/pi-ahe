@@ -25,7 +25,7 @@
 - [Quick Start](#-quick-start)
 - [Commands](#-commands)
 - [Tools (LLM-callable)](#-tools-llm-callable)
-- [Telemetry & Tracking](#-telemetry--tracking)
+- [Telemetry & Tracking (Developer/Research)](#-telemetry--tracking-developerresearch)
 - [Architecture](#-architecture)
 - [Paper](#-paper)
 - [Related Projects](#-related-projects)
@@ -311,11 +311,13 @@ Type `/reload` in pi. All 9 modules auto-load. Type `/ahe` to see status.
 
 ---
 
-## 📈 Telemetry & Tracking
+## 📈 Telemetry & Tracking (Developer/Research)
 
-> ⚠️ **Privacy: Telemetry is OFF by default.** You must explicitly opt in with `/ahe:telemetry-on`. All data stays local in `.pi/harness/telemetry/store.json` — nothing is ever sent anywhere. Disable anytime with `/ahe:telemetry-off`.
+> ⚠️ **Regular users do NOT need this.** Tracking is for harness developers iterating on improvements, or researchers analyzing agent behavior. The three harness improvements (Python syntax check, Bash pre-flight, Import guard) work automatically without tracking enabled.
+>
+> Telemetry is OFF by default. All data stays local in `.pi/harness/telemetry/store.json` — nothing is ever sent anywhere.
 
-### Toggle Commands
+### Toggle Commands (developers only)
 
 | Command | Description |
 |---------|-------------|

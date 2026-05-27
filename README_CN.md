@@ -308,11 +308,13 @@ git clone https://github.com/huantuoshen-prog/pi-ahe .pi/extensions/ahe
 
 ---
 
-## 📈 追踪系统
+## 📈 追踪系统（开发者/研究用）
 
-> ⚠️ **隐私声明：追踪默认关闭。** 需要手动执行 `/ahe:telemetry-on` 才会开始收集数据。所有数据存储在本地 `.pi/harness/telemetry/store.json`，不会发送到任何地方。随时可用 `/ahe:telemetry-off` 关闭。
+> ⚠️ **普通用户不需要开启。** 追踪系统是为开发者迭代改进 harness 或研究人员分析数据设计的。日常使用 pi 时，三项 harness 改进（Python 语法检查、Bash 预检、Import 守卫）已经自动生效，无需开启追踪。
+>
+> 追踪默认关闭。所有数据存储在本地 `.pi/harness/telemetry/store.json`，不会发送到任何地方。
 
-### 开关命令
+### 开关命令（仅开发者需要）
 
 | 命令 | 说明 |
 |------|------|
