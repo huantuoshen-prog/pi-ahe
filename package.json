@@ -1,0 +1,32 @@
+{
+  "name": "pi-ahe",
+  "version": "1.0.0",
+  "description": "Agentic Harness Engineering — self-improving harness for pi coding agent (arXiv:2604.25850)",
+  "type": "module",
+  "main": "index.ts",
+  "files": [
+    "*.ts",
+    "SKILL.md",
+    "README.md",
+    "LICENSE"
+  ],
+  "keywords": [
+    "pi",
+    "coding-agent",
+    "harness-engineering",
+    "self-improvement",
+    "AHE",
+    "agentic",
+    "observability",
+    "benchmark"
+  ],
+  "author": "huantuoshen-prog",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/huantuoshen-prog/pi-ahe"
+  },
+  "pi": {
+    "entry": "index.ts"
+  }
+}
