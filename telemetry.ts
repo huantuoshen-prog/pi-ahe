@@ -3,7 +3,12 @@
  *
  * Tracks per-task metrics to answer: "Does this harness make me more efficient?"
  *
- * Features:
+ * ⚠️ PRIVACY: Telemetry is OFF by default.
+ *    Enable with /ahe:telemetry-on or ahe_telemetry_toggle tool.
+ *    When disabled, no task data is collected — only the enabled/disabled flag is stored.
+ *    All data stays local in .pi/harness/telemetry/store.json. Nothing is sent anywhere.
+ *
+ * Features (when enabled):
  *   - Task categorization (bash, edit, debug, read/write, other)
  *   - Per-task metrics: tool calls, tokens, errors, wall time
  *   - Rolling 7-day / 30-day averages
@@ -15,6 +20,11 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import * as fs from "node:fs";
 import * as path from "node:path";
+
+// ─── Telemetry Enabled Flag ──────────────────────────────────────
+// Default: OFF. The user must explicitly opt in.
+// Stored in the telemetry store so it persists across sessions.
+const TELEMETRY_STATE_KEY = "ahe-telemetry-enabled";
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -118,6 +128,7 @@ function classifyTask(prompt: string): TaskCategory {
 
 export default function (pi: ExtensionAPI) {
   let store: TelemetryStore = emptyStore();
+  let enabled = false;  // OFF by default — must opt in
 
   // Per-task tracking state
   let currentTaskStart: number = 0;
@@ -129,15 +140,24 @@ export default function (pi: ExtensionAPI) {
 
   // ── Restore persisted state ──
   pi.on("session_start", async (_event, ctx) => {
+    // Reset per-task state
     currentTaskStart = 0;
     currentTaskCalls = 0;
     currentTaskTokens = 0;
     currentTaskErrors = 0;
     currentTaskPrompt = "";
 
+    // Restore telemetry store
     for (const entry of ctx.sessionManager.getEntries()) {
       if (entry.type === "custom" && entry.customType === CUSTOM_TYPE) {
         try { store = entry.data as TelemetryStore; } catch { store = emptyStore(); }
+      }
+    }
+
+    // Restore enabled/disabled state
+    for (const entry of ctx.sessionManager.getEntries()) {
+      if (entry.type === "custom" && entry.customType === TELEMETRY_STATE_KEY) {
+        enabled = entry.data?.enabled === true;
       }
     }
 
@@ -150,12 +170,19 @@ export default function (pi: ExtensionAPI) {
       });
     }
 
-    // Take an efficiency snapshot on session start
-    takeSnapshot("all");
+    // Notification about telemetry state
+    if (enabled) {
+      ctx.ui.notify?.("AHE telemetry: ACTIVE — tracking task efficiency", "info");
+    } else {
+      ctx.ui.notify?.("AHE telemetry: OFF — use /ahe:telemetry-on to enable", "info");
+    }
+
+    // Take an efficiency snapshot on session start (only if enabled)
   });
 
   // ── Detect new user prompt (start of a task) ──
   pi.on("message", async (event, _ctx) => {
+    if (!enabled) return;
     const msg = event as any;
     if (msg.role !== "user") return;
 
@@ -177,12 +204,14 @@ export default function (pi: ExtensionAPI) {
 
   // ── Count tool calls per task ──
   pi.on("tool_call", async (_event, _ctx) => {
+    if (!enabled) return;
     currentTaskCalls++;
     store.totalToolCalls++;
   });
 
   // ── Count tokens ──
   pi.on("model_response", async (event, _ctx) => {
+    if (!enabled) return;
     const usage = (event as any).usage;
     if (usage?.totalTokens) {
       currentTaskTokens += usage.totalTokens;
@@ -192,6 +221,7 @@ export default function (pi: ExtensionAPI) {
 
   // ── Count tool errors ──
   pi.on("tool_result", async (event, _ctx) => {
+    if (!enabled) return;
     if (event.isError) {
       currentTaskErrors++;
       store.totalErrors++;
@@ -200,12 +230,13 @@ export default function (pi: ExtensionAPI) {
 
   // ── Finalize task on session shutdown ──
   pi.on("session_shutdown", async (_event, ctx) => {
-    if (currentTaskPrompt && currentTaskCalls > 0) {
+    if (enabled && currentTaskPrompt && currentTaskCalls > 0) {
       finalizeTask();
     }
 
-    store.totalSessions++;
-    store.recentSessions.push({
+    if (enabled) {
+      store.totalSessions++;
+      store.recentSessions.push({
       timestamp: new Date().toISOString(),
       taskCount: store.taskRecords.filter(
         r => r.sessionId === ctx.sessionManager?.sessionId
@@ -218,7 +249,67 @@ export default function (pi: ExtensionAPI) {
     }
 
     pi.appendEntry(CUSTOM_TYPE, store);
+
+    // Always save enabled state
+    pi.appendEntry(TELEMETRY_STATE_KEY, { enabled });
+
     saveToDisk(ctx.cwd);
+  });
+
+  // ── Toggle telemetry on/off ──
+  function setEnabled(val: boolean, ctx: any) {
+    enabled = val;
+    const label = val ? "ON — now tracking task efficiency" : "OFF — no data collected";
+    ctx.ui?.notify?.(`AHE telemetry: ${label}`, val ? "info" : "info");
+    // Persist immediately
+    pi.appendEntry(TELEMETRY_STATE_KEY, { enabled });
+  }
+
+  pi.registerTool({
+    name: "ahe_telemetry_toggle",
+    label: "AHE Toggle Telemetry",
+    description:
+      "Turn AHE efficiency tracking ON or OFF. OFF by default — you must explicitly opt in. All data stays local.",
+    parameters: {
+      type: "object",
+      properties: {
+        enable: {
+          type: "boolean",
+          description: "true = turn ON, false = turn OFF",
+        },
+      },
+      required: ["enable"],
+    },
+    async execute(_toolCallId, params, _signal, _onUpdate, ctx) {
+      setEnabled(params.enable, ctx);
+      return {
+        content: [{
+          type: "text",
+          text: enabled
+            ? "✅ Telemetry ENABLED. Task efficiency is now being tracked.\n\n" +
+              "- Each task is auto-categorized (bash/edit/debug/readwrite)\n" +
+              "- Metrics: tool calls, tokens, errors, time\n" +
+              "- Data stored locally in .pi/harness/telemetry/\n" +
+              "- View with /ahe:dashboard or ahe_telemetry tool\n" +
+              "- Turn off anytime with ahe_telemetry_toggle(enable: false)"
+            : "⏸️ Telemetry DISABLED. No task data is being collected.\n\n" +
+              "- Existing data is preserved but no new data is recorded\n" +
+              "- Re-enable anytime with ahe_telemetry_toggle(enable: true)\n" +
+              "- All data stays local — nothing is ever sent anywhere",
+        }],
+        details: { enabled },
+      };
+    },
+  });
+
+  pi.registerCommand("ahe:telemetry-on", {
+    description: "Enable AHE efficiency tracking",
+    handler: async (_args, ctx) => { setEnabled(true, ctx); },
+  });
+
+  pi.registerCommand("ahe:telemetry-off", {
+    description: "Disable AHE efficiency tracking",
+    handler: async (_args, ctx) => { setEnabled(false, ctx); },
   });
 
   // ── Tool: view efficiency dashboard ──
@@ -248,6 +339,12 @@ export default function (pi: ExtensionAPI) {
       const lines: string[] = [];
 
       lines.push("# AHE Efficiency Tracking");
+      lines.push("");
+      lines.push(enabled
+        ? "**Status: 🟢 ENABLED** — tracking task efficiency | `/ahe:telemetry-off` to disable"
+        : "**Status: ⏸️ DISABLED** — no data collected | `/ahe:telemetry-on` to enable");
+      lines.push("");
+      lines.push("> All data stays local in `.pi/harness/telemetry/store.json`. Nothing is sent anywhere.");
       lines.push("");
 
       // ── SUMMARY ──
@@ -441,6 +538,10 @@ export default function (pi: ExtensionAPI) {
 
       ctx.ui.setWidget?.("ahe-dashboard", [
         "━━━ AHE Efficiency Dashboard ━━━",
+        "",
+        enabled
+          ? "🟢 Telemetry: ACTIVE — tracking efficiency"
+          : "⏸️ Telemetry: OFF — /ahe:telemetry-on to enable",
         "",
         `📊 Tasks: ${tasks.length} total | ${recent.length} recent`,
         `🔧 Avg calls/task: ${avg.toFixed(1)} (recent: ${recentAvg.toFixed(1)}, ${trend >= 0 ? "+" : ""}${trend.toFixed(1)}%)`,

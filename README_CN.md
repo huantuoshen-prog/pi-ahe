@@ -310,7 +310,19 @@ git clone https://github.com/huantuoshen-prog/pi-ahe .pi/extensions/ahe
 
 ## 📈 追踪系统
 
-所有数据通过 `pi.appendEntry()` 跨会话持久化，`/reload` 或重启后自动恢复：
+> ⚠️ **隐私声明：追踪默认关闭。** 需要手动执行 `/ahe:telemetry-on` 才会开始收集数据。所有数据存储在本地 `.pi/harness/telemetry/store.json`，不会发送到任何地方。随时可用 `/ahe:telemetry-off` 关闭。
+
+### 开关命令
+
+| 命令 | 说明 |
+|------|------|
+| `/ahe:telemetry-on` | 开启效率追踪（需主动选择） |
+| `/ahe:telemetry-off` | 关闭追踪（停止收集新数据，已有数据保留） |
+| `/ahe:dashboard` | 查看当前追踪状态和效率数据 |
+
+LLM 也可通过 `ahe_telemetry_toggle(enable: true/false)` 工具控制。
+
+### 追踪内容（开启后）
 
 | 追踪内容 | 存储位置 |
 |----------|---------|

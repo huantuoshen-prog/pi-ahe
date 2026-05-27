@@ -313,7 +313,19 @@ Type `/reload` in pi. All 9 modules auto-load. Type `/ahe` to see status.
 
 ## 📈 Telemetry & Tracking
 
-All data persists across sessions and `/reload` via `pi.appendEntry()`:
+> ⚠️ **Privacy: Telemetry is OFF by default.** You must explicitly opt in with `/ahe:telemetry-on`. All data stays local in `.pi/harness/telemetry/store.json` — nothing is ever sent anywhere. Disable anytime with `/ahe:telemetry-off`.
+
+### Toggle Commands
+
+| Command | Description |
+|---------|-------------|
+| `/ahe:telemetry-on` | Enable efficiency tracking (opt-in) |
+| `/ahe:telemetry-off` | Disable tracking (stops new data, existing data preserved) |
+| `/ahe:dashboard` | View tracking status and efficiency data |
+
+The LLM can also toggle via `ahe_telemetry_toggle(enable: true/false)` tool.
+
+### What is tracked (when enabled)
 
 | Tracked | Stored At |
 |---------|-----------|
