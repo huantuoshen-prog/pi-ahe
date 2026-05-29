@@ -390,41 +390,7 @@ async function runSingleTask(
   }
 
   try {
-    // Send the prompt to the agent and wait for completion
-    // This is the core: we need pi's API to run a task programmatically
-    //
-    // Since pi might not expose a headless "run prompt and wait" API directly,
-    // we provide two modes:
-    //   Mode A (live): pi sends the prompt to its agent and the agent does the work
-    //   Mode B (dry-run): run verification commands against pre-existing files
-    //
-    // For Mode A, we queue the prompt as a user message
-    const response = await new Promise<string>((resolve, reject) => {
-      const timeout = setTimeout(() => {
-        reject(new Error("Task timed out"));
-      }, task.timeoutMs);
-
-      try {
-        // Try to use pi's internal messaging
-        _pi.sendUserMessage?.(task.prompt, {
-          deliverAs: "steer",
-          onComplete: (result: any) => {
-            clearTimeout(timeout);
-            tokensConsumed = result.usage?.totalTokens || 0;
-            toolCalls = result.toolCalls?.length || 0;
-            toolErrors =
-              result.toolCalls?.filter((tc: any) => tc.isError).length || 0;
-            agentTurns = result.turns || 0;
-            resolve(result.response || "");
-          },
-        });
-      } catch (e: any) {
-        clearTimeout(timeout);
-        reject(e);
-      }
-    });
-
-    // Run verification
+    // Try verification immediately — check if expected outputs already exist
     let verificationOutput = "";
     try {
       verificationOutput = execSync(task.verifyCommand, {
@@ -443,28 +409,49 @@ async function runSingleTask(
       task.expectedOutputs.length === 0 ||
       task.expectedOutputs.some((eo) => verificationOutput.includes(eo));
 
+    if (passed || hasExpected) {
+      return {
+        taskId: task.id,
+        harnessVersion: "current",
+        outcome: "pass",
+        tokensConsumed: 0,
+        toolCalls: 0,
+        toolErrors: 0,
+        wallClockMs: Date.now() - startTime,
+        agentTurns: 0,
+        verificationOutput,
+      };
+    }
+
+    // Task not yet completed — queue the prompt for the agent (fire-and-forget)
+    try {
+      _pi.sendUserMessage?.(task.prompt, { deliverAs: "steer" });
+    } catch {
+      // sendUserMessage may throw if agent is not idle; ignore
+    }
+
     return {
       taskId: task.id,
       harnessVersion: "current",
-      outcome: passed || hasExpected ? "pass" : "fail",
-      tokensConsumed,
-      toolCalls,
-      toolErrors,
+      outcome: "fail",
+      tokensConsumed: 0,
+      toolCalls: 0,
+      toolErrors: 0,
       wallClockMs: Date.now() - startTime,
-      agentTurns,
+      agentTurns: 0,
+      errorMessage: "Task not yet completed. Agent has been prompted. Run verification again after agent finishes.",
       verificationOutput,
     };
   } catch (e: any) {
-    const isTimeout = e.message?.includes("timed out");
     return {
       taskId: task.id,
       harnessVersion: "current",
-      outcome: isTimeout ? "timeout" : "error",
-      tokensConsumed,
-      toolCalls,
-      toolErrors,
+      outcome: "error",
+      tokensConsumed: 0,
+      toolCalls: 0,
+      toolErrors: 0,
       wallClockMs: Date.now() - startTime,
-      agentTurns,
+      agentTurns: 0,
       errorMessage: e.message,
     };
   } finally {

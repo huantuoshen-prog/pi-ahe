@@ -181,9 +181,9 @@ export default function (pi: ExtensionAPI) {
   });
 
   // ── Detect new user prompt (start of a task) ──
-  pi.on("message", async (event, _ctx) => {
+  pi.on("message_start", async (event, _ctx) => {
     if (!enabled) return;
-    const msg = event as any;
+    const msg = (event as any).message || (event as any);
     if (msg.role !== "user") return;
 
     // Finalize previous task if one was in progress
@@ -210,9 +210,9 @@ export default function (pi: ExtensionAPI) {
   });
 
   // ── Count tokens ──
-  pi.on("model_response", async (event, _ctx) => {
+  pi.on("message_end", async (event, _ctx) => {
     if (!enabled) return;
-    const usage = (event as any).usage;
+    const usage = (event as any).message?.usage;
     if (usage?.totalTokens) {
       currentTaskTokens += usage.totalTokens;
       store.totalTokens += usage.totalTokens;
@@ -239,7 +239,7 @@ export default function (pi: ExtensionAPI) {
       store.recentSessions.push({
       timestamp: new Date().toISOString(),
       taskCount: store.taskRecords.filter(
-        r => r.sessionId === ctx.sessionManager?.sessionId
+        r => r.sessionId === ctx.sessionManager?.getSessionId()
       ).length,
       toolCalls: currentTaskCalls,
       tokens: currentTaskTokens,
