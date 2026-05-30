@@ -27,6 +27,9 @@ import registerBenchmarkRunner from "./benchmark-runner";
 import registerPythonMiddleware from "./python-middleware";
 import registerBashPreflight from "./bash-preflight";
 import registerImportGuard from "./import-guard";
+import registerVerificationGuard from "./verification-guard";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 export default function (pi: ExtensionAPI) {
   // ── Telemetry (cross-module tracking) ──
@@ -51,6 +54,10 @@ export default function (pi: ExtensionAPI) {
   registerBashPreflight(pi);
   // R3: Python import detection (missing module alerts)
   registerImportGuard(pi);
+  // R4: Verification convergence — eliminate redundant re-verification
+  registerVerificationGuard(pi);
+  // R5: Efficient coding prompts — plan-first, verify-once injection
+  registerPromptInjection(pi);
 
   // ── Cross-module telemetry hook ──
   // Count tool calls across all sessions for long-term tracking
@@ -78,6 +85,8 @@ export default function (pi: ExtensionAPI) {
         "  R1: Python auto-syntax-check + py  ✅",
         "  R2: Bash pre-flight validation     ✅",
         "  R3: Import guard (missing module)  ✅",
+        "  R4: Verification convergence guard  ✅",
+        "  R5: Efficient coding prompts        ✅",
         "",
         "Commands:",
         "  /ahe                Show this status",
@@ -96,7 +105,23 @@ export default function (pi: ExtensionAPI) {
         "  AHE-Benchmark-Report.docx (full report)",
       ]);
 
-      ctx.ui.notify?.("AHE loaded — 8 modules, 3 harness improvements active", "info");
+      ctx.ui.notify?.("AHE loaded — 10 modules, 5 harness improvements active", "info");
     },
+  });
+}
+
+// ── R5: Prompt Injection ─────────────────────────────────────────
+
+function registerPromptInjection(pi: ExtensionAPI): void {
+  pi.on("before_agent_start", async (event, _ctx) => {
+    try {
+      const promptPath = path.join(__dirname, "prompts", "efficient-coding.md");
+      const efficientCodingGuide = fs.readFileSync(promptPath, "utf-8");
+      if (event.systemPrompt) {
+        event.systemPrompt = event.systemPrompt + "\n\n" + efficientCodingGuide;
+      }
+    } catch {
+      // Silently skip if prompt file not found
+    }
   });
 }

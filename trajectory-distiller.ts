@@ -80,6 +80,14 @@ function getTimestamp(): string {
   return new Date().toISOString().replace(/[:.]/g, "-");
 }
 
+function getHomeDir(): string {
+  return process.env.HOME || process.env.USERPROFILE || "~";
+}
+
+function sessionDirName(cwd: string): string {
+  return cwd.replace(/^[A-Za-z]:/, (drive) => `--${drive[0].toLowerCase()}`).replace(/[/\\:]+/g, "-");
+}
+
 /**
  * Parse a pi session JSONL file and extract task-level summaries.
  * Each user message starts a task; each task ends at the next user message
@@ -577,9 +585,9 @@ export default function (pi: ExtensionAPI) {
 
       // Collect recent sessions
       const sessionsDir = path.join(
-        process.env.HOME || "~",
+        getHomeDir(),
         ".pi/agent/sessions",
-        cwd.replace(/[/\\:]/g, "_")
+        sessionDirName(cwd)
       );
       let sessionFiles: string[] = [];
       if (fs.existsSync(sessionsDir)) {

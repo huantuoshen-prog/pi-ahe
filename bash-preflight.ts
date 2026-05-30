@@ -100,6 +100,14 @@ function validateBashCommand(command: string): ValidationIssue[] {
     }
   }
 
+  // ── Python-launcher steering: remind agent to use py tool ──
+  if (/^python3?\s/.test(command) || /\bpython3?\s+-c\b/.test(command) || /\bpython3?\s+\S+\.py\b/.test(command)) {
+    issues.push({
+      severity: "warning",
+      message: "Consider using the 'py' tool instead of 'bash python' — it auto-detects the correct Python installation",
+    });
+  }
+
   // ── Dangerous patterns ──
   if (/\brm\s+-rf\s+\//.test(command)) {
     issues.push({
@@ -184,9 +192,10 @@ export default function (pi: ExtensionAPI) {
         "Fix the issues above before re-running.",
       ]);
 
-      // Note: We can't actually BLOCK the tool call here since pi's API
-      // doesn't support aborting from on("tool_call"). Instead, we inject
-      // a warning message that the Agent will see before the command runs.
+      return {
+        block: true,
+        reason: `Bash pre-flight found ${errors.length} error(s): ${errors[0].message}. Fix the command before re-running.`,
+      };
     } else if (warnings.length > 0) {
       // Only warnings — let it run but notify
       ctx.ui.notify?.(

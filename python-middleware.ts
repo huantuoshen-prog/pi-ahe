@@ -30,7 +30,7 @@ export default function (pi: ExtensionAPI) {
     if (event.isError) return;
 
     const input = event.input as any;
-    const filePath = input?.path || "";
+    const filePath = input?.path || input?.file_path || input?.file || "";
 
     // Only for Python files
     if (!filePath.endsWith(".py")) return;

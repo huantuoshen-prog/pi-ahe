@@ -367,6 +367,16 @@ function computeHash(data: string): string {
 
 // ─── Benchmark Runner ────────────────────────────────────────────
 
+function runTeardown(task: BenchmarkTask, cwd: string): void {
+  if (task.teardownCommands) {
+    for (const cmd of task.teardownCommands) {
+      try {
+        execSync(cmd, { cwd, timeout: 10000, stdio: "pipe" });
+      } catch {}
+    }
+  }
+}
+
 async function runSingleTask(
   task: BenchmarkTask,
   cwd: string,
@@ -410,6 +420,7 @@ async function runSingleTask(
       task.expectedOutputs.some((eo) => verificationOutput.includes(eo));
 
     if (passed || hasExpected) {
+      runTeardown(task, cwd);
       return {
         taskId: task.id,
         harnessVersion: "current",
@@ -423,7 +434,8 @@ async function runSingleTask(
       };
     }
 
-    // Task not yet completed — queue the prompt for the agent (fire-and-forget)
+    // Task not yet completed — queue the prompt for the agent
+    // Don't teardown yet: the agent needs the workspace to work on the task
     try {
       _pi.sendUserMessage?.(task.prompt, { deliverAs: "steer" });
     } catch {
@@ -443,6 +455,7 @@ async function runSingleTask(
       verificationOutput,
     };
   } catch (e: any) {
+    runTeardown(task, cwd);
     return {
       taskId: task.id,
       harnessVersion: "current",
@@ -454,15 +467,6 @@ async function runSingleTask(
       agentTurns: 0,
       errorMessage: e.message,
     };
-  } finally {
-    // Run teardown
-    if (task.teardownCommands) {
-      for (const cmd of task.teardownCommands) {
-        try {
-          execSync(cmd, { cwd, timeout: 10000, stdio: "pipe" });
-        } catch {}
-      }
-    }
   }
 }
 

@@ -237,23 +237,23 @@ export default function (pi: ExtensionAPI) {
     if (enabled) {
       store.totalSessions++;
       store.recentSessions.push({
-      timestamp: new Date().toISOString(),
-      taskCount: store.taskRecords.filter(
-        r => r.sessionId === ctx.sessionManager?.getSessionId()
-      ).length,
-      toolCalls: currentTaskCalls,
-      tokens: currentTaskTokens,
-    });
-    if (store.recentSessions.length > MAX_SESSIONS) {
-      store.recentSessions = store.recentSessions.slice(-MAX_SESSIONS);
-    }
+        timestamp: new Date().toISOString(),
+        taskCount: store.taskRecords.filter(
+          r => r.sessionId === ctx.sessionManager?.getSessionId()
+        ).length,
+        toolCalls: currentTaskCalls,
+        tokens: currentTaskTokens,
+      });
+      if (store.recentSessions.length > MAX_SESSIONS) {
+        store.recentSessions = store.recentSessions.slice(-MAX_SESSIONS);
+      }
 
-    pi.appendEntry(CUSTOM_TYPE, store);
+      pi.appendEntry(CUSTOM_TYPE, store);
+      saveToDisk(ctx.cwd);
+    }
 
     // Always save enabled state
     pi.appendEntry(TELEMETRY_STATE_KEY, { enabled });
-
-    saveToDisk(ctx.cwd);
   });
 
   // ── Toggle telemetry on/off ──

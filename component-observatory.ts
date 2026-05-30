@@ -62,6 +62,10 @@ interface ComponentIndex {
 
 // ─── Helpers ─────────────────────────────────────────────────────
 
+function getHomeDir(): string {
+  return process.env.HOME || process.env.USERPROFILE || "~";
+}
+
 function ensureDir(dir: string): void {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -295,7 +299,7 @@ function buildComponentIndex(cwd: string): ComponentIndex {
 
   // Extensions (global + project)
   const extDirs = [
-    path.join(process.env.HOME || process.env.USERPROFILE || "~", ".pi/agent/extensions"),
+    path.join(getHomeDir(), ".pi/agent/extensions"),
     path.join(cwd, ".pi/extensions"),
   ];
   for (const dir of extDirs) {
@@ -328,7 +332,7 @@ function buildComponentIndex(cwd: string): ComponentIndex {
 
   // Skills
   const skillDirs = [
-    path.join(process.env.HOME || process.env.USERPROFILE || "~", ".pi/agent/skills"),
+    path.join(getHomeDir(), ".pi/agent/skills"),
     path.join(cwd, ".pi/skills"),
   ];
   for (const dir of skillDirs) {
@@ -352,7 +356,7 @@ function buildComponentIndex(cwd: string): ComponentIndex {
 
   // Prompt templates
   const promptDirs = [
-    path.join(process.env.HOME || process.env.USERPROFILE || "~", ".pi/agent/prompts"),
+    path.join(getHomeDir(), ".pi/agent/prompts"),
     path.join(cwd, ".pi/prompts"),
   ];
   for (const dir of promptDirs) {
@@ -374,7 +378,7 @@ function buildComponentIndex(cwd: string): ComponentIndex {
 
   // Settings
   const settingsPaths = [
-    path.join(process.env.HOME || process.env.USERPROFILE || "~", ".pi/agent/settings.json"),
+    path.join(getHomeDir(), ".pi/agent/settings.json"),
     path.join(cwd, ".pi/settings.json"),
   ];
   for (const sp of settingsPaths) {

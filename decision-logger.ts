@@ -192,7 +192,7 @@ export default function (pi: ExtensionAPI) {
   pi.on("tool_call", async (event, ctx) => {
     if (event.toolName !== "edit" && event.toolName !== "write") return;
     const input = event.input as any;
-    const filePath = input?.path || "";
+    const filePath = input?.path || input?.file_path || input?.file || "";
 
     // Detect if this is a harness edit (modifying extensions, skills, prompts)
     const isHarnessEdit =
