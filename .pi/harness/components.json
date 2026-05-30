@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-30T05-21-33-827Z",
+  "generatedAt": "2026-05-30T05-23-05-195Z",
   "components": [
     {
       "type": "extension",
@@ -125,7 +125,7 @@
       "name": "tools.json",
       "path": "G:\\claudecode\\pi-ahe\\.pi\\harness\\tools.json",
       "editable": false,
-      "hash": "a36f41f1"
+      "hash": "a5ed05f1"
     }
   ]
 }
