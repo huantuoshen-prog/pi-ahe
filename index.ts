@@ -29,6 +29,7 @@ import registerBashPreflight from "./bash-preflight";
 import registerImportGuard from "./import-guard";
 import registerVerificationGuard from "./verification-guard";
 import registerContextGuard from "./context-guard";
+import registerPrewriteValidator from "./prewrite-validator";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -61,6 +62,8 @@ export default function (pi: ExtensionAPI) {
   registerPromptInjection(pi);
   // R6: Context window guard — auto-trim + proactive compaction warning
   registerContextGuard(pi);
+  // R7: Pre-write validator — catch Python syntax errors before writing to disk
+  registerPrewriteValidator(pi);
 
   // ── Cross-module telemetry hook ──
   // Count tool calls across all sessions for long-term tracking
@@ -91,6 +94,7 @@ export default function (pi: ExtensionAPI) {
         "  R4: Verification convergence guard  ✅",
         "  R5: Efficient coding prompts        ✅",
         "  R6: Context window guard            ✅",
+        "  R7: Pre-write code validator         ✅",
         "",
         "Commands:",
         "  /ahe                Show this status",
@@ -110,7 +114,7 @@ export default function (pi: ExtensionAPI) {
         "  AHE-Benchmark-Report.docx (full report)",
       ]);
 
-      ctx.ui.notify?.("AHE loaded — 11 modules, 6 harness improvements active", "info");
+      ctx.ui.notify?.("AHE loaded — 12 modules, 7 harness improvements active", "info");
     },
   });
 }
