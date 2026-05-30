@@ -1,0 +1,105 @@
+{
+  "generatedAt": "2026-05-30T04-34-23-172Z",
+  "tools": [
+    {
+      "name": "read",
+      "description": "Read the contents of a file. Supports text files and images (jpg, png, gif, webp). Images are sent as attachments. For text files, output is truncated to 2000 lines or 50KB (whichever is hit first). Use offset/limit for large files. When you need the full file, continue with offset until complete.",
+      "source": "builtin"
+    },
+    {
+      "name": "bash",
+      "description": "Execute a bash command in the current working directory. Returns stdout and stderr. Output is truncated to last 2000 lines or 50KB (whichever is hit first). If truncated, full output is saved to a temp file. Optionally provide a timeout in seconds.",
+      "source": "builtin"
+    },
+    {
+      "name": "edit",
+      "description": "Edit a single file using exact text replacement. Every edits[].oldText must match a unique, non-overlapping region of the original file. If two changes affect the same block or nearby lines, merge them into one edit instead of emitting overlapping edits. Do not include large unchanged regions just to connect distant changes.",
+      "source": "builtin"
+    },
+    {
+      "name": "write",
+      "description": "Write content to a file. Creates the file if it doesn't exist, overwrites if it does. Automatically creates parent directories.",
+      "source": "builtin"
+    },
+    {
+      "name": "grep",
+      "description": "Search file contents for a pattern. Returns matching lines with file paths and line numbers. Respects .gitignore. Output is truncated to 100 matches or 50KB (whichever is hit first). Long lines are truncated to 500 chars.",
+      "source": "builtin"
+    },
+    {
+      "name": "find",
+      "description": "Search for files by glob pattern. Returns matching file paths relative to the search directory. Respects .gitignore. Output is truncated to 1000 results or 50KB (whichever is hit first).",
+      "source": "builtin"
+    },
+    {
+      "name": "ls",
+      "description": "List directory contents. Returns entries sorted alphabetically, with '/' suffix for directories. Includes dotfiles. Output is truncated to 500 entries or 50KB (whichever is hit first).",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_telemetry_toggle",
+      "description": "Turn AHE efficiency tracking ON or OFF. OFF by default — you must explicitly opt in. All data stays local.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_telemetry",
+      "description": "View efficiency tracking data: per-task metrics, trends over time, before/after harness edit comparison.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_view_harness",
+      "description": "View the current harness state: system prompt, available tools, component index.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_analyze_sessions",
+      "description": "Analyze recent session trajectories to identify failure patterns and generate improvement suggestions. Returns structured evidence report.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_log_decision",
+      "description": "Record a harness edit decision with a testable prediction. Every edit becomes a falsifiable contract that will be verified against future task outcomes.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_verify_decision",
+      "description": "Verify a previously logged prediction against actual task outcomes. Marks the decision as verified or falsified.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_view_decisions",
+      "description": "View the current decision chain: all harness edits, their predictions, and verification status.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_bench_list",
+      "description": "List all available benchmark tasks with categories and difficulty.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_bench_run",
+      "description": "Run benchmark tasks and measure success rate, token usage, tool errors. Use this to establish a baseline before harness edits, and again after to measure delta.",
+      "source": "builtin"
+    },
+    {
+      "name": "ahe_bench_compare",
+      "description": "Compare two benchmark runs to determine if harness edits were improvements or regressions.",
+      "source": "builtin"
+    },
+    {
+      "name": "py",
+      "description": "Run a Python script and return its output. Faster than bash+py for Python-specific tasks. Use this instead of bash for running .py files.",
+      "source": "builtin"
+    },
+    {
+      "name": "bash_check",
+      "description": "Validate a bash command for syntax errors before running it. Returns any issues found.",
+      "source": "builtin"
+    },
+    {
+      "name": "check_imports",
+      "description": "Scan a Python file for import statements and check if all imported modules exist on disk. Returns missing modules with suggested file paths.",
+      "source": "builtin"
+    }
+  ]
+}

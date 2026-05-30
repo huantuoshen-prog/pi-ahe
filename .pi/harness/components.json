@@ -1,0 +1,131 @@
+{
+  "generatedAt": "2026-05-30T04-34-23-176Z",
+  "components": [
+    {
+      "type": "extension",
+      "name": "ahe",
+      "path": "C:\\Users\\24993\\.pi\\agent\\extensions\\ahe\\index.ts",
+      "editable": true,
+      "hash": "8e7b204c"
+    },
+    {
+      "type": "extension",
+      "name": "auto-session-name",
+      "path": "C:\\Users\\24993\\.pi\\agent\\extensions\\auto-session-name.ts",
+      "editable": true,
+      "hash": "84960853"
+    },
+    {
+      "type": "extension",
+      "name": "dirty-repo-guard",
+      "path": "C:\\Users\\24993\\.pi\\agent\\extensions\\dirty-repo-guard.ts",
+      "editable": true,
+      "hash": "3140910"
+    },
+    {
+      "type": "extension",
+      "name": "git-checkpoint",
+      "path": "C:\\Users\\24993\\.pi\\agent\\extensions\\git-checkpoint.ts",
+      "editable": true,
+      "hash": "81da2910"
+    },
+    {
+      "type": "extension",
+      "name": "permission-gate",
+      "path": "C:\\Users\\24993\\.pi\\agent\\extensions\\permission-gate.ts",
+      "editable": true,
+      "hash": "6770597f"
+    },
+    {
+      "type": "extension",
+      "name": "protected-paths",
+      "path": "C:\\Users\\24993\\.pi\\agent\\extensions\\protected-paths.ts",
+      "editable": true,
+      "hash": "272f3730"
+    },
+    {
+      "type": "skill",
+      "name": "browser-tools",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\browser-tools\\SKILL.md",
+      "editable": true,
+      "hash": "d5d48edb"
+    },
+    {
+      "type": "skill",
+      "name": "docx",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\docx\\SKILL.md",
+      "editable": true,
+      "hash": "49be06f8"
+    },
+    {
+      "type": "skill",
+      "name": "frontend-design",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\frontend-design\\SKILL.md",
+      "editable": true,
+      "hash": "825560e2"
+    },
+    {
+      "type": "skill",
+      "name": "pdf",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\pdf\\SKILL.md",
+      "editable": true,
+      "hash": "3066b94d"
+    },
+    {
+      "type": "skill",
+      "name": "pptx",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\pptx\\SKILL.md",
+      "editable": true,
+      "hash": "55964444"
+    },
+    {
+      "type": "skill",
+      "name": "pr-graph",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\pr-graph\\SKILL.md",
+      "editable": true,
+      "hash": "2a98710"
+    },
+    {
+      "type": "skill",
+      "name": "skill-creator",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\skill-creator\\SKILL.md",
+      "editable": true,
+      "hash": "76fad8d5"
+    },
+    {
+      "type": "skill",
+      "name": "tavily-search",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\tavily-search\\SKILL.md",
+      "editable": true,
+      "hash": "ea17ce94"
+    },
+    {
+      "type": "skill",
+      "name": "xlsx",
+      "path": "C:\\Users\\24993\\.pi\\agent\\skills\\xlsx\\SKILL.md",
+      "editable": true,
+      "hash": "fc31db6"
+    },
+    {
+      "type": "settings",
+      "name": "global",
+      "path": "C:\\Users\\24993\\.pi\\agent\\settings.json",
+      "editable": true,
+      "hash": "72824358"
+    },
+    {
+      "type": "system-prompt",
+      "name": "system-prompt.md",
+      "path": "G:\\claudecode\\pi-ahe\\.pi\\harness\\system-prompt.md",
+      "editable": false,
+      "hash": "bb463d7b"
+    },
+    {
+      "type": "tools-manifest",
+      "name": "tools.json",
+      "path": "G:\\claudecode\\pi-ahe\\.pi\\harness\\tools.json",
+      "editable": false,
+      "hash": "50d209f2"
+    }
+  ]
+}
