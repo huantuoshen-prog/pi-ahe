@@ -32,6 +32,7 @@ import registerContextGuard from "./context-guard";
 import registerPrewriteValidator from "./prewrite-validator";
 import registerTaskRouter from "./task-router";
 import registerToolBooster from "./tool-booster";
+import registerEvidenceAggregator from "./evidence-aggregator";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -70,6 +71,8 @@ export default function (pi: ExtensionAPI) {
   registerTaskRouter(pi);
   // R9: Tool affordance booster — redirect bash misuse to dedicated tools
   registerToolBooster(pi);
+  // R10: Cross-session evidence — auto-detect trends and regressions
+  registerEvidenceAggregator(pi);
 
   // ── Cross-module telemetry hook ──
   // Count tool calls across all sessions for long-term tracking
@@ -103,6 +106,7 @@ export default function (pi: ExtensionAPI) {
         "  R7: Pre-write code validator         ✅",
         "  R8: Task router + targeted guides     ✅",
         "  R9: Tool affordance booster           ✅",
+        "  R10: Cross-session evidence           ✅",
         "",
         "Commands:",
         "  /ahe                Show this status",
@@ -116,6 +120,7 @@ export default function (pi: ExtensionAPI) {
         "  /ahe:context         Show context window usage",
         "  /ahe:route            Show task router status",
         "  /ahe:tools            Show harness tools reference",
+        "  /ahe:evidence         Cross-session trend analysis",
         "  /ahe:telemetry-on    Enable tracking (opt-in)",
         "  /ahe:telemetry-off   Disable tracking",
         "  /ahe:record-edit     Mark harness improvement",
@@ -124,7 +129,7 @@ export default function (pi: ExtensionAPI) {
         "  AHE-Benchmark-Report.docx (full report)",
       ]);
 
-      ctx.ui.notify?.("AHE loaded — 14 modules, 9 harness improvements active", "info");
+      ctx.ui.notify?.("AHE loaded — 15 modules, 10 harness improvements active", "info");
     },
   });
 }
