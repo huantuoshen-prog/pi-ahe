@@ -30,6 +30,7 @@ import registerImportGuard from "./import-guard";
 import registerVerificationGuard from "./verification-guard";
 import registerContextGuard from "./context-guard";
 import registerPrewriteValidator from "./prewrite-validator";
+import registerTaskRouter from "./task-router";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
@@ -64,6 +65,8 @@ export default function (pi: ExtensionAPI) {
   registerContextGuard(pi);
   // R7: Pre-write validator — catch Python syntax errors before writing to disk
   registerPrewriteValidator(pi);
+  // R8: Task router — classify tasks and inject targeted guidance
+  registerTaskRouter(pi);
 
   // ── Cross-module telemetry hook ──
   // Count tool calls across all sessions for long-term tracking
@@ -95,6 +98,7 @@ export default function (pi: ExtensionAPI) {
         "  R5: Efficient coding prompts        ✅",
         "  R6: Context window guard            ✅",
         "  R7: Pre-write code validator         ✅",
+        "  R8: Task router + targeted guides     ✅",
         "",
         "Commands:",
         "  /ahe                Show this status",
@@ -106,6 +110,7 @@ export default function (pi: ExtensionAPI) {
         "  /ahe:bench           Run benchmark suite",
         "  /ahe:dashboard       Efficiency dashboard",
         "  /ahe:context         Show context window usage",
+        "  /ahe:route            Show task router status",
         "  /ahe:telemetry-on    Enable tracking (opt-in)",
         "  /ahe:telemetry-off   Disable tracking",
         "  /ahe:record-edit     Mark harness improvement",
@@ -114,7 +119,7 @@ export default function (pi: ExtensionAPI) {
         "  AHE-Benchmark-Report.docx (full report)",
       ]);
 
-      ctx.ui.notify?.("AHE loaded — 12 modules, 7 harness improvements active", "info");
+      ctx.ui.notify?.("AHE loaded — 13 modules, 8 harness improvements active", "info");
     },
   });
 }
